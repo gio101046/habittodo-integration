@@ -1,12 +1,22 @@
-﻿using System;
+﻿using Habitica.Todoist.Integration.Model.Storage.Enum;
+using Microsoft.Azure.Cosmos.Table;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Habitica.Todoist.Integration.Model.Storage
 {
-    public class TodoChange
+    /* TODO: Rework structure */
+    public class TodoChange : TableEntity
     {
-        public string Id { get; set; }
+        public TodoChange() { }
+
+        public TodoChange(string userId, string todoId)
+        {
+            PartitionKey = userId;
+            RowKey = todoId;
+        }
+
         public TodoApp Application { get; set; }
         public TodoAction Action { get; set; }
         public bool Applied { get; set; }

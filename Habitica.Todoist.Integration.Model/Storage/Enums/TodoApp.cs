@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace Habitica.Todoist.Integration.Model.Storage
+namespace Habitica.Todoist.Integration.Model.Storage.Enum
 {
     public enum TodoApp
     {

@@ -1,4 +1,5 @@
 ﻿using Habitica.Todoist.Integration.Model.Todoist;
+using Habitica.Todoist.Integration.Model.Todoist.Responses;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
@@ -8,18 +9,21 @@ using System.Threading.Tasks;
 
 namespace Habitica.Todoist.Integration.Services
 {
-    public class TodoistClientService
+    public class TodoistServiceClient
     {
         private string apiKey { get; set; }
         private string baseUrl => "https://api.todoist.com/sync/v8/";
 
-        public TodoistClientService(string apiKey)
+        public TodoistServiceClient(string apiKey)
         {
             this.apiKey = apiKey;
         }
 
-        public async Task<SyncResponse> GetUpdatedItems(string syncToken = "*")
+        public async Task<SyncResponse> GetChangedItems(string syncToken = null)
         {
+            if (string.IsNullOrEmpty(syncToken))
+                syncToken = "*";
+
             using (var client = CreateWebClient())
             {
                 var body = InitializeRequestBody();

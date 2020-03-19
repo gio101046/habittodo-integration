@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace Habitica.Todoist.Integration.Model.Todoist
+namespace Habitica.Todoist.Integration.Model.Todoist.Responses
 {
     public class SyncResponse
     {
@@ -11,7 +11,7 @@ namespace Habitica.Todoist.Integration.Model.Todoist
         public string Sync_token { get; set; }
         [JsonProperty("full_sync")]
         public bool Full_sync { get; set; }
-        [JsonProperty("itmes")]
+        [JsonProperty("items")]
         public List<Item> Items { get; set; }
     }
 }
