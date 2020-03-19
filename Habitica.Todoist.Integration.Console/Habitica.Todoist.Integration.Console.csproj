@@ -67,8 +67,8 @@
     <Reference Include="Microsoft.Threading.Tasks.Extensions, Version=1.0.12.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Bcl.Async.1.0.165\lib\net45\Microsoft.Threading.Tasks.Extensions.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
-      <HintPath>..\packages\Newtonsoft.Json.6.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
@@ -128,6 +128,10 @@
     <ProjectReference Include="..\Habitica.Todoist.Integration.Model\Habitica.Todoist.Integration.Model.csproj">
       <Project>{1EDCF34E-E1B1-4F82-AEC7-90C35A267967}</Project>
       <Name>Habitica.Todoist.Integration.Model</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Habitica.Todoist.Integration.Services\Habitica.Todoist.Integration.Services.csproj">
+      <Project>{A804D4CC-B5CC-466F-AF3D-E850B16D2D15}</Project>
+      <Name>Habitica.Todoist.Integration.Services</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

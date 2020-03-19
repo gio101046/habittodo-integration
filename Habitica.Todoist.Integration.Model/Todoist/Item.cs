@@ -1,14 +1,20 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Linq;
 
 namespace Habitica.Todoist.Integration.Model.Todoist
 {
     public class Item
     {
+        [JsonProperty("content")]
         public string Content { get; set; }
+        [JsonProperty("Id")]
         public string Id { get; set; }
+        [JsonProperty("due")]
         public Due Due { get; set; }
+        [JsonProperty("is_deleted")]
         public int Is_deleted { get; set; }
+        [JsonProperty("date_completed")]
         public string Date_completed { get; set; }
 
         public int? GetDifficulty()

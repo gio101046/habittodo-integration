@@ -1,5 +1,6 @@
 ﻿using Habitica.Todoist.Integration.Model.Habitica;
 using Habitica.Todoist.Integration.Model.Todoist;
+using Habitica.Todoist.Integration.Services;
 using Microsoft.Extensions.Configuration;
 using Newtonsoft.Json;
 using System;
@@ -27,17 +28,10 @@ namespace Habitica.Todoist.Integration.Console
         {
             ConfigBuild();
 
-            SyncResponse response = null;
-            using (var client = new WebClient())
-            {
-                client.Headers[HttpRequestHeader.ContentType] = "application/x-www-form-urlencoded";
-                var token = "*";
-                var body = $"token={todoistApiKey}&sync_token={token}&resource_types=[\"items\"]";
-                response = JsonConvert.DeserializeObject<SyncResponse>(client.UploadString($"{todoistApiUrl}sync", body));
-            }
-
-
-            foreach (var item in response.Items)
+            var todoistClient = new TodoistClientService(todoistApiKey);
+            var syncResponse  = todoistClient.GetUpdatedItems().ConfigureAwait(false).GetAwaiter().GetResult();
+               
+            foreach (var item in syncResponse.Items)
             {
                 var newTask = new Task
                 {
@@ -47,18 +41,8 @@ namespace Habitica.Todoist.Integration.Console
                     Priority = GetHabiticaDifficulty(item.GetDifficulty().GetValueOrDefault())
                 };
 
-                using (var client = new WebClient())
-                {
-                    client.Headers["Content-Type"] = "application/json";
-                    client.Headers["x-api-user"] = habiticaUserId;
-                    client.Headers["x-api-key"] = habiticaApiKey;
-                    client.Headers["x-client"] = "console-test";
-
-                    var result = client.UploadString($"{habiticaApiUrl}tasks/user", "POST", JsonConvert.SerializeObject(newTask, Formatting.Indented));
-
-                    System.Console.WriteLine(result);
-                    System.Console.ReadKey();
-                }
+                var habiticaClient = new HabiticaClientService(habiticaUserId, habiticaApiKey);
+                var task = habiticaClient.CreateUserTask(newTask).ConfigureAwait(false).GetAwaiter().GetResult();
             }
         }
 

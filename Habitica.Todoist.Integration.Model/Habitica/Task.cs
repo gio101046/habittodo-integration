@@ -15,5 +15,7 @@ namespace Habitica.Todoist.Integration.Model.Habitica
         public string Date { get; set; }
         [JsonProperty("priority")]
         public string Priority { get; set; }
+        [JsonProperty("id")]
+        public string Id { get; set; }
     }
 }
