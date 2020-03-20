@@ -17,15 +17,15 @@ namespace Habitica.Todoist.Integration.Function.Sync
     public static class SyncFunction
     {
         private static IConfiguration configuration { get; set; }
-        private static string habiticaUserId => configuration["habitica:userId"];
-        private static string habiticaApiKey => configuration["habitica:apiKey"];
-        private static string todoistApiKey => configuration["todoist:apiKey"];
-        private static string tableStorageConnectionString => configuration["tableStorage:connectionString"];
+        private static string habiticaUserId => configuration["habiticaUserId"];
+        private static string habiticaApiKey => configuration["habiticaApiKey"];
+        private static string todoistApiKey => configuration["todoistApiKey"];
+        private static string tableStorageConnectionString => configuration["tableStorageConnectionString"];
         private static string giosUserId => "0b6ec4eb-8878-4b9e-8585-7673764a6541";
 
         [Singleton]
         [FunctionName("SyncFunction")]
-        public static async Task Run([TimerTrigger("0 */3 * * * *")]TimerInfo myTimer, ILogger log)
+        public static async Task Run([TimerTrigger("0 */2 * * * *")]TimerInfo myTimer, ILogger log)
         {
             BuildConfig();
 
@@ -143,8 +143,6 @@ namespace Habitica.Todoist.Integration.Function.Sync
         private static void BuildConfig()
         {
             configuration = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
-                .AddJsonFile("local.settings.json", optional: true, reloadOnChange: true)
                 .AddEnvironmentVariables()
                 .Build();
         }
