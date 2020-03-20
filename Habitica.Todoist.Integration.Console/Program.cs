@@ -43,79 +43,11 @@ namespace Habitica.Todoist.Integration.Console
             var response = todoistClient.GetChangedItems(syncToken).ConfigureAwait(false).GetAwaiter().GetResult();
             var changedItems = response.Items;
 
-            // filter out items by actions
-            var addItems = changedItems.Where(x => !tableStorageClient.Exists<TodoHabitLink>(giosUserId, x.Id)
-                .ConfigureAwait(false).GetAwaiter().GetResult() && x.Is_deleted == 0).ToList();
-            var updateItems = changedItems.Where(x => tableStorageClient.Exists<TodoHabitLink>(giosUserId, x.Id)
-                .ConfigureAwait(false).GetAwaiter().GetResult() && x.Is_deleted == 0 && x.Date_completed == null).ToList();
-            var completeItems = changedItems.Where(x => x.Is_deleted == 0 && x.Date_completed != null).ToList();
-            var deleteItems = changedItems.Where(x => tableStorageClient.Exists<TodoHabitLink>(giosUserId, x.Id)
-                .ConfigureAwait(false).GetAwaiter().GetResult() && x.Is_deleted == 1).ToList();
-
-            foreach (var addItem in addItems)
-            {
-                var task = habiticaClient.CreateTask(TaskFromTodoistItem(addItem)).ConfigureAwait(false).GetAwaiter().GetResult().Data;
-                var link = new TodoHabitLink(giosUserId, addItem.Id, task.Id);
-
-                tableStorageClient.InsertOrUpdate(link).ConfigureAwait(false).GetAwaiter().GetResult();
-                tableStorageClient.InsertOrUpdate(link.Reverse()).ConfigureAwait(false).GetAwaiter().GetResult();
-            }
-
-            foreach (var updateItem in updateItems)
-            {
-                var habiticaId = tableStorageClient.Query<TodoHabitLink>().Where(x => x.PartitionKey == giosUserId && x.RowKey == updateItem.Id)
-                        .ToList().First().HabiticaId;
-                habiticaClient.UpdateTask(TaskFromTodoistItem(updateItem, habiticaId)).ConfigureAwait(false).GetAwaiter().GetResult();
-            }
-
-            foreach (var completeItem in completeItems)
-            {
-                var habiticaId = tableStorageClient.Query<TodoHabitLink>().Where(x => x.PartitionKey == giosUserId && x.RowKey == completeItem.Id)
-                        .ToList().First().HabiticaId;
-                habiticaClient.ScoreTask(habiticaId, ScoreAction.Up).ConfigureAwait(false).GetAwaiter().GetResult();
-            }
-
-            foreach (var deleteItem in deleteItems)
-            {
-                var habiticaId = tableStorageClient.Query<TodoHabitLink>().Where(x => x.PartitionKey == giosUserId && x.RowKey == deleteItem.Id)
-                        .ToList().First().HabiticaId;
-                habiticaClient.DeleteTask(habiticaId).ConfigureAwait(false).GetAwaiter().GetResult();
-            }
-
+            /* TESTING */
+            
             // store sync token
             var todoistSync = new TodoistSync(giosUserId, response.Sync_token);
             tableStorageClient.InsertOrUpdate(todoistSync).ConfigureAwait(false).GetAwaiter().GetResult();
-        }
-
-        public static string GetHabiticaDifficulty(int todoistDifficulty)
-        {
-            switch (todoistDifficulty)
-            {
-                case 1:
-                    return "0.1";
-                case 2:
-                    return "1";
-                case 3:
-                    return "1.5";
-                case 4:
-                    return "2";
-            }
-            return null;
-        }
-
-        public static Task TaskFromTodoistItem(Item item, string id = null)
-        {
-            var taskTypeStr = Enum.GetName(typeof(TaskType), TaskType.Todo).ToLower();
-            var task = new Task
-            {
-                Id = id,
-                Text = item.Content,
-                Type = taskTypeStr,
-                Date = item.Due?.ToJavaScriptDateStr(),
-                Priority = GetHabiticaDifficulty(item.Priority)
-            };
-
-            return task;
         }
 
         static void ConfigBuild()
