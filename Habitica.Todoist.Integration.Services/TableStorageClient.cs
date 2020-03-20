@@ -47,9 +47,9 @@ namespace Habitica.Todoist.Integration.Services
             var result = await table.ExecuteAsync(operation);
 
             return result.Result as T;
-        } 
+        }
 
-        public async Task<bool> Exists<T>(string partitionKey, string rowKey) where T : TableEntity, new()
+        public async Task<bool> ExistsAsync<T>(string partitionKey, string rowKey) where T : TableEntity, new()
         {
             var tableName = typeof(T).Name.ToLower();
             var table = tables[tableName];
@@ -60,17 +60,10 @@ namespace Habitica.Todoist.Integration.Services
             return result.Result != null;
         }
 
-
-        //public async Task<List<T>> Read<T>(string partitionKey, string rowKey) where T : TableEntity
-        //{
-        //    var tableName = typeof(T).Name.ToLower();
-        //    var table = tables[tableName];
-
-        //    var operation = TableOperation.Retrieve(partitionKey, rowKey);
-        //    var result = await table.ExecuteAsync(operation);
-
-        //    return result.Result != null;
-        //}
+        public bool Exists<T>(string partitionKey, string rowKey) where T : TableEntity, new()
+        {
+            return Query<T>().Where(x => x.PartitionKey == partitionKey && x.RowKey == rowKey).ToList().Any();
+        }
 
         public TableQuery<T> Query<T>() where T : TableEntity, new()
         {

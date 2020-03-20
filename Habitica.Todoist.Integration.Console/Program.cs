@@ -17,12 +17,10 @@ namespace Habitica.Todoist.Integration.Console
 {
     class Program
     {
-        static IConfiguration configuration { get; set; }
+        private static IConfiguration configuration { get; set; }
 
-        private static string habiticaApiUrl => "https://habitica.com/api/v3/";
         private static string habiticaUserId => configuration["habitica:userId"];
         private static string habiticaApiKey => configuration["habitica:apiKey"];
-        private static string todoistApiUrl => "https://api.todoist.com/sync/v8/";
         private static string todoistApiKey => configuration["todoist:apiKey"];
         private static string tableStorageConnectionString => configuration["tableStorage:connectionString"];
         private static string giosUserId => "0b6ec4eb-8878-4b9e-8585-7673764a6541";
@@ -30,14 +28,6 @@ namespace Habitica.Todoist.Integration.Console
         static void Main(string[] args)
         {
             ConfigBuild();
-
-            //var habiticaClient2 = new HabiticaServiceClient(habiticaUserId, habiticaApiKey);
-
-            //var tasks = habiticaClient2.ReadTasks().ConfigureAwait(false).GetAwaiter().GetResult().Data;
-            //foreach (var task in tasks)
-            //    habiticaClient2.DeleteTask(task.Id).ConfigureAwait(false).GetAwaiter().GetResult();
-
-            //return;
 
             // initialize all the clients 
             var habiticaClient = new HabiticaServiceClient(habiticaUserId, habiticaApiKey);
