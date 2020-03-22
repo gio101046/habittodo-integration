@@ -1,12 +1,11 @@
-﻿using Habitica.Todoist.Integration.Model.Storage;
-using Microsoft.Azure.Cosmos.Table;
+﻿using Microsoft.Azure.Cosmos.Table;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Habitica.Todoist.Integration.Services
+namespace Habitica.Todoist.Integration.Data
 {
     public class TableStorageClient
     {

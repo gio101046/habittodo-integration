@@ -1,4 +1,5 @@
-﻿using Habitica.Todoist.Integration.Model.Habitica;
+﻿using Habitica.Todoist.Integration.Data;
+using Habitica.Todoist.Integration.Model.Habitica;
 using Habitica.Todoist.Integration.Model.Habitica.Enums;
 using Habitica.Todoist.Integration.Model.Storage;
 using Habitica.Todoist.Integration.Model.Todoist;
@@ -40,7 +41,7 @@ namespace Habitica.Todoist.Integration.Console
                         .OrderByDescending(x => x.Timestamp).First().RowKey; } catch { }
 
             // get all changed items from todoist
-            var response = todoistClient.GetChangedItems(syncToken).ConfigureAwait(false).GetAwaiter().GetResult();
+            var response = todoistClient.GetItemChanges(syncToken).ConfigureAwait(false).GetAwaiter().GetResult();
             var changedItems = response.Items;
 
             /* TESTING */

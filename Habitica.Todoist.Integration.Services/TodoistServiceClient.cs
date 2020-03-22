@@ -19,7 +19,7 @@ namespace Habitica.Todoist.Integration.Services
             this.apiKey = apiKey;
         }
 
-        public async Task<SyncResponse> GetChangedItems(string syncToken = null)
+        public async Task<SyncResponse> GetItemChanges(string syncToken = null)
         {
             if (string.IsNullOrEmpty(syncToken))
                 syncToken = "*";

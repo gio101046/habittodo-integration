@@ -2,6 +2,7 @@ using System;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Habitica.Todoist.Integration.Data;
 using Habitica.Todoist.Integration.Model.Habitica.Enums;
 using Habitica.Todoist.Integration.Model.Storage;
 using Habitica.Todoist.Integration.Model.Todoist;
@@ -14,7 +15,7 @@ using HabiticaTask = Habitica.Todoist.Integration.Model.Habitica.Task;
 
 namespace Habitica.Todoist.Integration.Function.Sync
 {
-    public static class SyncFunction
+    public static class ScheduledSyncFunction
     {
         private static IConfiguration configuration { get; set; }
         private static string habiticaUserId => configuration["habiticaUserId"];
@@ -24,8 +25,8 @@ namespace Habitica.Todoist.Integration.Function.Sync
         private static string giosUserId => "0b6ec4eb-8878-4b9e-8585-7673764a6541";
 
         [Singleton]
-        [FunctionName("SyncFunction")]
-        public static async Task Run([TimerTrigger("0 */2 * * * *")]TimerInfo myTimer, ILogger log)
+        [FunctionName("ScheduledSyncFunction")]
+        public static async Task Run([TimerTrigger("0 */30 * * * *")]TimerInfo myTimer, ILogger log)
         {
             BuildConfig();
 
@@ -47,7 +48,7 @@ namespace Habitica.Todoist.Integration.Function.Sync
             catch { }
 
             // get all changed items from todoist
-            var response = await todoistClient.GetChangedItems(syncToken);
+            var response = await todoistClient.GetItemChanges(syncToken);
             var changedItems = response.Items;
 
             // filter out items by actions

@@ -313,6 +313,10 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Habitica.Todoist.Integration.Data\Habitica.Todoist.Integration.Data.csproj">
+      <Project>{08055C1C-7581-4E74-97BB-C5D56E0CA3D8}</Project>
+      <Name>Habitica.Todoist.Integration.Data</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Habitica.Todoist.Integration.Model\Habitica.Todoist.Integration.Model.csproj">
       <Project>{1EDCF34E-E1B1-4F82-AEC7-90C35A267967}</Project>
       <Name>Habitica.Todoist.Integration.Model</Name>

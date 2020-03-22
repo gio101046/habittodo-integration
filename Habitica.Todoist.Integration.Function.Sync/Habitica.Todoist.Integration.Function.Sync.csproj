@@ -7,6 +7,7 @@
     <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="3.0.1" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Habitica.Todoist.Integration.Data\Habitica.Todoist.Integration.Data.csproj" />
     <ProjectReference Include="..\Habitica.Todoist.Integration.Model\Habitica.Todoist.Integration.Model.csproj" />
     <ProjectReference Include="..\Habitica.Todoist.Integration.Services\Habitica.Todoist.Integration.Services.csproj" />
   </ItemGroup>
