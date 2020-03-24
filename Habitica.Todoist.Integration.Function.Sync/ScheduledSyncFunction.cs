@@ -19,9 +19,9 @@ namespace Habitica.Todoist.Integration.Function.Sync
     {
         public static Configuration ScheduledConfiguration { get; set; } = new Configuration();
 
-        [Singleton]
+        [Singleton("SyncLock", SingletonScope.Host)]
         [FunctionName("ScheduledSyncFunction")]
-        public static async Task Run([TimerTrigger("0 */1 * * * *")]TimerInfo myTimer, ILogger log)
+        public static async Task Run([TimerTrigger("0 0 * * * *")]TimerInfo myTimer, ILogger log)
         {
             // initialize all the clients 
             var habiticaClient = new HabiticaServiceClient(ScheduledConfiguration.HabiticaUserId, ScheduledConfiguration.HabiticaApiKey);
