@@ -20,7 +20,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Functions", "Functions", "{
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Habitica.Todoist.Integration.Function.Sync", "Habitica.Todoist.Integration.Function.Sync\Habitica.Todoist.Integration.Function.Sync.csproj", "{9C825688-20BC-4580-8126-1E7320A8CC4D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Habitica.Todoist.Integration.Data", "Habitica.Todoist.Integration.Data\Habitica.Todoist.Integration.Data.csproj", "{08055C1C-7581-4E74-97BB-C5D56E0CA3D8}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Habitica.Todoist.Integration.Data", "Habitica.Todoist.Integration.Data\Habitica.Todoist.Integration.Data.csproj", "{08055C1C-7581-4E74-97BB-C5D56E0CA3D8}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
