@@ -50,36 +50,5 @@ namespace Habitica.Todoist.Integration.Function.Sync
             // return success
             return new OkResult();
         }
-
-        private static string GetHabiticaDifficulty(int todoistDifficulty)
-        {
-            switch (todoistDifficulty)
-            {
-                case 1:
-                    return "0.1";
-                case 2:
-                    return "1";
-                case 3:
-                    return "1.5";
-                case 4:
-                    return "2";
-            }
-            return null;
-        }
-
-        private static HabiticaTask TaskFromTodoistItem(Item item, string id = null)
-        {
-            var taskTypeStr = Enum.GetName(typeof(TaskType), TaskType.Todo).ToLower();
-            var task = new HabiticaTask
-            {
-                Id = id,
-                Text = item.Content,
-                Type = taskTypeStr,
-                Date = item.Due?.ToJavaScriptDateStr(),
-                Priority = GetHabiticaDifficulty(item.Priority)
-            };
-
-            return task;
-        }
     }
 }
