@@ -18,12 +18,12 @@ namespace Habitica.Todoist.Integration.Services
         private string userId { get; set; }
         private string latestSyncToken { get; set; } = string.Empty;
 
-        public TodoistIntegrationService(TodoistServiceClient todoistClient, 
-            TableStorageClient storageClient,
+        public TodoistIntegrationService(string todoistApiKey, 
+            string storageConnectionString,
             string userId)
         {
-            this.todoistClient = todoistClient;
-            this.storageClient = storageClient;
+            this.todoistClient = new TodoistServiceClient(todoistApiKey);
+            this.storageClient = new TableStorageClient(storageConnectionString);
             this.userId = userId;
         }
 

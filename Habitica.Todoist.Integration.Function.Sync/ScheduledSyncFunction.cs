@@ -23,54 +23,26 @@ namespace Habitica.Todoist.Integration.Function.Sync
         [FunctionName("ScheduledSyncFunction")]
         public static async Task Run([TimerTrigger("0 0 * * * *")]TimerInfo myTimer, ILogger log)
         {
-            // initialize all the clients 
-            var habiticaClient = new HabiticaServiceClient(ScheduledConfiguration.HabiticaUserId, ScheduledConfiguration.HabiticaApiKey);
-            var todoistClient = new TodoistServiceClient(ScheduledConfiguration.TodoistApiKey);
-            var storageClient = new TableStorageClient(ScheduledConfiguration.TableStorageConnectionString);
-
             // initialize integration services
-            var todoistIntegration = new TodoistIntegrationService(todoistClient, storageClient, ScheduledConfiguration.GiosUserId);
-            var giosUserId = ScheduledConfiguration.GiosUserId;
+            var todoistService = new TodoistIntegrationService(ScheduledConfiguration.TodoistApiKey,
+                ScheduledConfiguration.TableStorageConnectionString,
+                ScheduledConfiguration.GiosUserId);
+            var habiticaService = new HabiticaIntegrationService(ScheduledConfiguration.HabiticaUserId,
+                ScheduledConfiguration.HabiticaApiKey,
+                ScheduledConfiguration.TableStorageConnectionString,
+                ScheduledConfiguration.GiosUserId);
 
             // get all changed items from todoist
-            var items = await todoistIntegration.ReadItemChanges();
+            var items = await todoistService.ReadItemChanges();
 
             // perform actions
-            foreach (var addedItem in items.WhereAdded())
-            {
-                var task = (await habiticaClient.CreateTask(TaskFromTodoistItem(addedItem))).Data;
-                var link = new TodoHabitLink(giosUserId, addedItem.Id, task.Id);
-
-                await storageClient.InsertOrUpdate(link);
-                await storageClient.InsertOrUpdate(link.Reverse());
-            }
-
-            foreach (var updatedItem in items.WhereUpdated())
-            {
-                var habiticaId = storageClient.Query<TodoHabitLink>()
-                    .Where(x => x.PartitionKey == giosUserId && x.RowKey == updatedItem.Id)
-                    .ToList().First().HabiticaId;
-                await habiticaClient.UpdateTask(TaskFromTodoistItem(updatedItem, habiticaId));
-            }
-
-            foreach (var completedItem in items.WhereCompleted())
-            {
-                var habiticaId = storageClient.Query<TodoHabitLink>()
-                    .Where(x => x.PartitionKey == giosUserId && x.RowKey == completedItem.Id)
-                    .ToList().First().HabiticaId;
-                await habiticaClient.ScoreTask(habiticaId, ScoreAction.Up);
-            }
-
-            foreach (var deleteItem in items.WhereDeleted())
-            {
-                var habiticaId = storageClient.Query<TodoHabitLink>()
-                    .Where(x => x.PartitionKey == giosUserId && x.RowKey == deleteItem.Id)
-                    .ToList().First().HabiticaId;
-                await habiticaClient.DeleteTask(habiticaId);
-            }
+            await habiticaService.AddTasks(items.WhereAdded());
+            await habiticaService.UpdateTasks(items.WhereUpdated());
+            await habiticaService.CompleteTasks(items.WhereCompleted());
+            await habiticaService.DeleteTasks(items.WhereDeleted());
 
             // commit read changes
-            await todoistIntegration.CommitRead();
+            await todoistService.CommitRead();
         }
 
         private static string GetHabiticaDifficulty(int todoistDifficulty)

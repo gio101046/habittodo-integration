@@ -37,6 +37,17 @@ namespace Habitica.Todoist.Integration.Data
             }
         }
 
+        public async Task<T> RetrieveRecord<T>(string partitionKey, string rowKey) where T : TableEntity, new()
+        {
+            var tableName = typeof(T).Name.ToLower();
+            var table = tables[tableName];
+
+            var operation = TableOperation.Retrieve<T>(partitionKey, rowKey);
+            var result = await table.ExecuteAsync(operation);
+
+            return result.Result as T;
+        }
+
         public async Task<T> InsertOrUpdate<T>(T entity) where T : TableEntity, new()
         {
             var tableName = typeof(T).Name.ToLower();
@@ -45,7 +56,7 @@ namespace Habitica.Todoist.Integration.Data
             var operation = TableOperation.InsertOrReplace(entity); // TODO: InsertOrReplace vs InsertOrMerge
             var result = await table.ExecuteAsync(operation);
 
-            return result.Result as T;
+            return result.Result as T; // TODO: might not work
         }
 
         public async Task<bool> ExistsAsync<T>(string partitionKey, string rowKey) where T : TableEntity, new()
@@ -53,7 +64,7 @@ namespace Habitica.Todoist.Integration.Data
             var tableName = typeof(T).Name.ToLower();
             var table = tables[tableName];
 
-            var operation = TableOperation.Retrieve(partitionKey, rowKey);
+            var operation = TableOperation.Retrieve<T>(partitionKey, rowKey);
             var result = await table.ExecuteAsync(operation);
 
             return result.Result != null;

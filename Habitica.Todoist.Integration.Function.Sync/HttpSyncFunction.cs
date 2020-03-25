@@ -26,54 +26,26 @@ namespace Habitica.Todoist.Integration.Function.Sync
         [FunctionName("HttpSyncFunction")]
         public static async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req, ILogger log)
         {
-            // initialize all the clients 
-            var habiticaClient = new HabiticaServiceClient(HttpConfiguration.HabiticaUserId, HttpConfiguration.HabiticaApiKey);
-            var todoistClient = new TodoistServiceClient(HttpConfiguration.TodoistApiKey);
-            var storageClient = new TableStorageClient(HttpConfiguration.TableStorageConnectionString);
-
             // initialize integration services
-            var todoistIntegration = new TodoistIntegrationService(todoistClient, storageClient, HttpConfiguration.GiosUserId);
-            var giosUserId = HttpConfiguration.GiosUserId;
+            var todoistService = new TodoistIntegrationService(HttpConfiguration.TodoistApiKey, 
+                HttpConfiguration.TableStorageConnectionString, 
+                HttpConfiguration.GiosUserId);
+            var habiticaService = new HabiticaIntegrationService(HttpConfiguration.HabiticaUserId,
+                HttpConfiguration.HabiticaApiKey,
+                HttpConfiguration.TableStorageConnectionString,
+                HttpConfiguration.GiosUserId);
 
             // get all changed items from todoist
-            var items = await todoistIntegration.ReadItemChanges();
+            var items = await todoistService.ReadItemChanges();
 
             // perform actions
-            foreach (var addedItem in items.WhereAdded())
-            {
-                var task = (await habiticaClient.CreateTask(TaskFromTodoistItem(addedItem))).Data;
-                var link = new TodoHabitLink(giosUserId, addedItem.Id, task.Id);
-
-                await storageClient.InsertOrUpdate(link);
-                await storageClient.InsertOrUpdate(link.Reverse());
-            }
-
-            foreach (var updatedItem in items.WhereUpdated())
-            {
-                var habiticaId = storageClient.Query<TodoHabitLink>()
-                    .Where(x => x.PartitionKey == giosUserId && x.RowKey == updatedItem.Id)
-                    .ToList().First().HabiticaId;
-                await habiticaClient.UpdateTask(TaskFromTodoistItem(updatedItem, habiticaId));
-            }
-
-            foreach (var completedItem in items.WhereCompleted())
-            {
-                var habiticaId = storageClient.Query<TodoHabitLink>()
-                    .Where(x => x.PartitionKey == giosUserId && x.RowKey == completedItem.Id)
-                    .ToList().First().HabiticaId;
-                await habiticaClient.ScoreTask(habiticaId, ScoreAction.Up);
-            }
-
-            foreach (var deleteItem in items.WhereDeleted())
-            {
-                var habiticaId = storageClient.Query<TodoHabitLink>()
-                    .Where(x => x.PartitionKey == giosUserId && x.RowKey == deleteItem.Id)
-                    .ToList().First().HabiticaId;
-                await habiticaClient.DeleteTask(habiticaId);
-            }
+            await habiticaService.AddTasks(items.WhereAdded());
+            await habiticaService.UpdateTasks(items.WhereUpdated());
+            await habiticaService.CompleteTasks(items.WhereCompleted());
+            await habiticaService.DeleteTasks(items.WhereDeleted());
 
             // commit read changes
-            await todoistIntegration.CommitRead();
+            await todoistService.CommitRead();
 
             // return success
             return new OkResult();
