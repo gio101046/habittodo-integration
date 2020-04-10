@@ -9,8 +9,25 @@ namespace Habitica.Todoist.Integration.Services.Extensions
 {
     public static class Extensions
     {
+        public static ChecklistItem ToHabiticaChecklistItem(this Item item, string habiticaId = null)
+        {
+            if (string.IsNullOrEmpty(item.Parent_Id))
+                return null;
+
+            var checklistItem = new ChecklistItem
+            {
+                Id = habiticaId,
+                Text = item.Content
+            };
+
+            return checklistItem;
+        }
+
         public static Task ToHabiticaTask(this Item item, string habiticaId = null)
         {
+            if (!string.IsNullOrEmpty(item.Parent_Id)) 
+                return null;
+
             var taskTypeStr = Enum.GetName(typeof(TaskType), TaskType.Todo).ToLower();
             var task = new Task
             {

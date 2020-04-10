@@ -39,7 +39,7 @@ namespace Habitica.Todoist.Integration.Function.Sync
             var items = await todoistService.ReadItemChanges();
 
             // perform actions
-            await habiticaService.AddTasks(items.WhereAdded());
+            await habiticaService.Add(items.WhereAdded());
             await habiticaService.UpdateTasks(items.WhereUpdated());
             await habiticaService.CompleteTasks(items.WhereCompleted());
             await habiticaService.DeleteTasks(items.WhereDeleted());

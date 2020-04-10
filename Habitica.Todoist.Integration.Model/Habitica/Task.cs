@@ -15,6 +15,8 @@ namespace Habitica.Todoist.Integration.Model.Habitica
         public string Date { get; set; }
         [JsonProperty("priority")]
         public string Priority { get; set; }
+        [JsonProperty("checklist", NullValueHandling = NullValueHandling.Ignore)]
+        public List<ChecklistItem> Checklist { get; set; }
         [JsonProperty("id")]
         public string Id { get; set; }
     }

@@ -1,4 +1,5 @@
 ﻿using HabiticaTask = Habitica.Todoist.Integration.Model.Habitica.Task;
+using ChecklistItem = Habitica.Todoist.Integration.Model.Habitica.ChecklistItem;
 using System.Net;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
@@ -20,6 +21,17 @@ namespace Habitica.Todoist.Integration.Services
         {
             this.userId = userId;
             this.apiKey = apiKey;
+        }
+
+        public async Task<HabiticaReponse<HabiticaTask>> CreateChecklistItem(ChecklistItem checklistItem, string taskId)
+        {
+            using (var client = CreateWebClient())
+            {
+                var request = JsonConvert.SerializeObject(checklistItem);
+                var json = await client.UploadStringTaskAsync($"{baseUrl}/tasks/{taskId}/checklist", "POST", request);
+
+                return JsonConvert.DeserializeObject<HabiticaReponse<HabiticaTask>>(json);
+            }
         }
 
         public async Task<HabiticaReponse<HabiticaTask>> CreateTask(HabiticaTask task)

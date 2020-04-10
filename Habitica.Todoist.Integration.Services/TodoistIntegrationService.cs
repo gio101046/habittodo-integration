@@ -29,10 +29,10 @@ namespace Habitica.Todoist.Integration.Services
 
         public async Task<Items> ReadItemChanges()
         {
-            var response = await todoistClient.GetItemChanges(ReadLatestSyncToken());
-            latestSyncToken = response.Sync_token;
+            var itemChangesResponse = await todoistClient.GetItemChanges(ReadLatestSyncToken());
+            latestSyncToken = itemChangesResponse.Sync_token;
 
-            return new Items(response.Items, storageClient, userId);
+            return new Items(itemChangesResponse.Items, storageClient, userId);
         }
 
         public async Task CommitRead()
@@ -57,48 +57,52 @@ namespace Habitica.Todoist.Integration.Services
 
         public class Items : IEnumerable<Item>
         {
-            private List<Item> items { get; set; }
+            private List<Item> changedItems;
             private readonly TableStorageClient storageClient;
             private readonly string userId;
 
-            internal Items(List<Item> items, TableStorageClient storageClient, string userId)
+            internal Items(List<Item> changedItems, TableStorageClient storageClient, string userId)
             {
-                this.items = items;
+                this.changedItems = changedItems;
                 this.storageClient = storageClient;
                 this.userId = userId;
             }
 
             public IEnumerable<Item> WhereAdded()
             {
-                return items
+                return changedItems
                     .Where(x => !storageClient
-                        .Exists<TodoHabitLink>(userId, x.Id) && x.Is_deleted == 0);
+                        .Exists<TodoHabitLink>(userId, x.Id) && x.Is_deleted == 0)
+                    .OrderBy(x => x.Parent_Id);
             }
 
             public IEnumerable<Item> WhereUpdated()
             {
-                return items
+                return changedItems
                     .Where(x => storageClient
-                        .Exists<TodoHabitLink>(userId, x.Id) && x.Is_deleted == 0);
+                        .Exists<TodoHabitLink>(userId, x.Id) && x.Is_deleted == 0)
+                    .OrderBy(x => x.Parent_Id);
             }
 
             public IEnumerable<Item> WhereCompleted()
             {
-                return items
+                return changedItems
                     .Where(x => storageClient
-                        .Exists<TodoHabitLink>(userId, x.Id) && x.Is_deleted == 0 && x.Date_completed != null);
+                        .Exists<TodoHabitLink>(userId, x.Id) && x.Is_deleted == 0 && x.Date_completed != null)
+                    .OrderBy(x => x.Parent_Id);
             }
 
             public IEnumerable<Item> WhereDeleted()
             {
-                return items
+                return changedItems
                     .Where(x => storageClient
-                        .Exists<TodoHabitLink>(userId, x.Id) && x.Is_deleted == 1);
+                        .Exists<TodoHabitLink>(userId, x.Id) && x.Is_deleted == 1)
+                    .OrderBy(x => x.Parent_Id);
             }
 
             public IEnumerator<Item> GetEnumerator()
             {
-                return items.GetEnumerator();
+                return changedItems.OrderBy(x => x.Parent_Id).GetEnumerator();
             }
 
             IEnumerator IEnumerable.GetEnumerator()

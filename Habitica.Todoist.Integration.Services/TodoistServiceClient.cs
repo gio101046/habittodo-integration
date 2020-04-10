@@ -19,11 +19,14 @@ namespace Habitica.Todoist.Integration.Services
             this.apiKey = apiKey;
         }
 
-        public async Task<SyncResponse> GetItemChanges(string syncToken = null)
+        public async Task<SyncResponse> GetItems()
         {
-            if (string.IsNullOrEmpty(syncToken))
-                syncToken = "*";
+            var response = await GetItemChanges("*");
+            return response;
+        }
 
+        public async Task<SyncResponse> GetItemChanges(string syncToken)
+        {
             using (var client = CreateWebClient())
             {
                 var body = InitializeRequestBody();
@@ -31,7 +34,8 @@ namespace Habitica.Todoist.Integration.Services
                 body["resource_types"] = "[\"items\"]";
 
                 var json = await client.UploadStringTaskAsync($"{baseUrl}sync", RequestBodyToString(body));
-                return JsonConvert.DeserializeObject<SyncResponse>(json);
+                var response = JsonConvert.DeserializeObject<SyncResponse>(json);
+                return response;
             }
         }
 

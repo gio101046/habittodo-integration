@@ -21,7 +21,7 @@ namespace Habitica.Todoist.Integration.Function.Sync
 
         [Singleton("SyncLock", SingletonScope.Host)]
         [FunctionName("ScheduledSyncFunction")]
-        public static async Task Run([TimerTrigger("0 0 * * * *")]TimerInfo myTimer, ILogger log)
+        public static async Task Run([TimerTrigger("* * * * * *")]TimerInfo myTimer, ILogger log)
         {
             // initialize integration services
             var todoistService = new TodoistIntegrationService(ScheduledConfiguration.TodoistApiKey,
@@ -33,10 +33,11 @@ namespace Habitica.Todoist.Integration.Function.Sync
                 ScheduledConfiguration.GiosUserId);
 
             // get all changed items from todoist
+
             var items = await todoistService.ReadItemChanges();
 
             // perform actions
-            await habiticaService.AddTasks(items.WhereAdded());
+            await habiticaService.Add(items.WhereAdded());
             await habiticaService.UpdateTasks(items.WhereUpdated());
             await habiticaService.CompleteTasks(items.WhereCompleted());
             await habiticaService.DeleteTasks(items.WhereDeleted());

@@ -1,10 +1,12 @@
 ﻿using Habitica.Todoist.Integration.Data;
+using ChecklistItem = Habitica.Todoist.Integration.Model.Habitica.ChecklistItem;
 using Habitica.Todoist.Integration.Model.Habitica.Enums;
 using Habitica.Todoist.Integration.Model.Storage;
 using Habitica.Todoist.Integration.Model.Todoist;
 using Habitica.Todoist.Integration.Services.Extensions;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -27,17 +29,39 @@ namespace Habitica.Todoist.Integration.Services
             this.userId = userId;
         }
 
-        public async Task AddTasks(IEnumerable<Item> items)
+        public async Task Add(IEnumerable<Item> items)
         {
-            foreach (var item in items)
-                await AddTask(item);
+            foreach (var item in items.OrderBy(x => x.Parent_Id))
+            {
+                if (!item.IsChild)
+                    await AddTask(item);
+                else
+                    await AddChecklistItem(item);
+            }
         }
 
         public async Task AddTask(Item item)
         {
+            if (item.IsChild)
+                throw new ArgumentException("Item passed as arguement has a valid Parent_Id");
+
             var task = (await habiticaClient.CreateTask(item.ToHabiticaTask())).Data;
             var link = new TodoHabitLink(userId, item.Id, task.Id);
 
+            await storageClient.InsertOrUpdate(link);
+            await storageClient.InsertOrUpdate(link.Reverse());
+        }
+
+        public async Task AddChecklistItem(Item item)
+        {
+            if (!item.IsChild)
+                throw new ArgumentException("Item passed as arguement does not have a valid Parent_Id");
+
+            var habiticaTaskId = (await storageClient.RetrieveRecord<TodoHabitLink>(userId, item.Parent_Id)).HabiticaId;
+            var checklistItem = (await habiticaClient.CreateChecklistItem(item.ToHabiticaChecklistItem(), habiticaTaskId)).Data.Checklist
+                .First(x => x.Text == item.Content);
+
+            var link = new TodoHabitLink(userId, item.Id, checklistItem.Id);
             await storageClient.InsertOrUpdate(link);
             await storageClient.InsertOrUpdate(link.Reverse());
         }
