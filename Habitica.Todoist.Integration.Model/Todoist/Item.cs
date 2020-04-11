@@ -24,6 +24,9 @@ namespace Habitica.Todoist.Integration.Model.Todoist
         [JsonProperty("date_completed")]
         public string Date_completed { get; set; }
 
+        /// <summary>
+        /// This field will always be false when an item is marked as deleted
+        /// </summary>
         [JsonIgnore]
         public bool IsChild => !string.IsNullOrEmpty(Parent_Id);
     }

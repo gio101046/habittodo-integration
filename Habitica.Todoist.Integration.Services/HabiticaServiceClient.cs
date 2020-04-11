@@ -23,17 +23,6 @@ namespace Habitica.Todoist.Integration.Services
             this.apiKey = apiKey;
         }
 
-        public async Task<HabiticaReponse<HabiticaTask>> CreateChecklistItem(ChecklistItem checklistItem, string taskId)
-        {
-            using (var client = CreateWebClient())
-            {
-                var request = JsonConvert.SerializeObject(checklistItem);
-                var json = await client.UploadStringTaskAsync($"{baseUrl}/tasks/{taskId}/checklist", "POST", request);
-
-                return JsonConvert.DeserializeObject<HabiticaReponse<HabiticaTask>>(json);
-            }
-        }
-
         public async Task<HabiticaReponse<HabiticaTask>> CreateTask(HabiticaTask task)
         {
             using (var client = CreateWebClient())
@@ -42,19 +31,6 @@ namespace Habitica.Todoist.Integration.Services
                 var json = await client.UploadStringTaskAsync($"{baseUrl}/tasks/user", "POST", request);
 
                 return JsonConvert.DeserializeObject<HabiticaReponse<HabiticaTask>>(json);
-            }
-        }
-
-        public async Task<HabiticaReponse<List<HabiticaTask>>> ReadTasks(TaskType taskType = TaskType.Todo)
-        {
-            var taskTypeStr = Enum.GetName(taskType.GetType(), taskType).ToLower();
-            using (var client = CreateWebClient())
-            {
-                var json = await client.DownloadStringTaskAsync($"{baseUrl}/tasks/user");
-                var response = JsonConvert.DeserializeObject<HabiticaReponse<List<HabiticaTask>>>(json);
-                response.Data.RemoveAll(x => x.Type != taskTypeStr);
-
-                return response;
             }
         }
 
@@ -80,6 +56,53 @@ namespace Habitica.Todoist.Integration.Services
             var actionStr = Enum.GetName(action.GetType(), action).ToLower();
             using (var client = CreateWebClient())
                 await client.UploadStringTaskAsync($"{baseUrl}/tasks/{taskId}/score/{actionStr}", "POST", "");
+        }
+
+        //public async Task<HabiticaReponse<List<HabiticaTask>>> ReadTasks(TaskType taskType = TaskType.Todo)
+        //{
+        //    var taskTypeStr = Enum.GetName(taskType.GetType(), taskType).ToLower();
+        //    using (var client = CreateWebClient())
+        //    {
+        //        var json = await client.DownloadStringTaskAsync($"{baseUrl}/tasks/user");
+        //        var response = JsonConvert.DeserializeObject<HabiticaReponse<List<HabiticaTask>>>(json);
+        //        response.Data.RemoveAll(x => x.Type != taskTypeStr);
+
+        //        return response;
+        //    }
+        //}        //public async Task<HabiticaReponse<List<HabiticaTask>>> ReadTasks(TaskType taskType = TaskType.Todo)
+
+        public async Task<HabiticaReponse<HabiticaTask>> CreateChecklistItem(ChecklistItem checklistItem, string taskId)
+        {
+            using (var client = CreateWebClient())
+            {
+                var request = JsonConvert.SerializeObject(checklistItem);
+                var json = await client.UploadStringTaskAsync($"{baseUrl}/tasks/{taskId}/checklist", "POST", request);
+
+                return JsonConvert.DeserializeObject<HabiticaReponse<HabiticaTask>>(json);
+            }
+        }
+
+        public async Task<HabiticaReponse<HabiticaTask>> UpdateChecklistItem(ChecklistItem checklistItem, string taskId)
+        {
+            using (var client = CreateWebClient())
+            {
+                var request = JsonConvert.SerializeObject(checklistItem);
+                var json = await client.UploadStringTaskAsync($"{baseUrl}/tasks/{taskId}/checklist/{checklistItem.Id}", "PUT", request);
+
+                return JsonConvert.DeserializeObject<HabiticaReponse<HabiticaTask>>(json);
+            }
+        }
+
+        public async Task DeleteChecklistItem(string taskId, string checklistItemId)
+        {
+            using (var client = CreateWebClient())
+                await client.UploadStringTaskAsync($"{baseUrl}/tasks/{taskId}/checklist/{checklistItemId}", "DELETE", "");
+        }
+
+        public async Task ScoreChecklistItem(string taskId, string checklistItemId)
+        {
+            using (var client = CreateWebClient())
+                await client.UploadStringTaskAsync($"{baseUrl}/tasks/{taskId}/checklist/{checklistItemId}/score", "POST", "");
         }
 
         private WebClient CreateWebClient()

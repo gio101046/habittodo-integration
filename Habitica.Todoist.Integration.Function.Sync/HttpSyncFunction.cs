@@ -27,8 +27,8 @@ namespace Habitica.Todoist.Integration.Function.Sync
         public static async Task<IActionResult> Run([HttpTrigger(AuthorizationLevel.Function, "get", "post", Route = null)] HttpRequest req, ILogger log)
         {
             // initialize integration services
-            var todoistService = new TodoistIntegrationService(HttpConfiguration.TodoistApiKey, 
-                HttpConfiguration.TableStorageConnectionString, 
+            var todoistService = new TodoistIntegrationService(HttpConfiguration.TodoistApiKey,
+                HttpConfiguration.TableStorageConnectionString,
                 HttpConfiguration.GiosUserId);
             var habiticaService = new HabiticaIntegrationService(HttpConfiguration.HabiticaUserId,
                 HttpConfiguration.HabiticaApiKey,
@@ -40,9 +40,9 @@ namespace Habitica.Todoist.Integration.Function.Sync
 
             // perform actions
             await habiticaService.Add(items.WhereAdded());
-            await habiticaService.UpdateTasks(items.WhereUpdated());
-            await habiticaService.CompleteTasks(items.WhereCompleted());
-            await habiticaService.DeleteTasks(items.WhereDeleted());
+            await habiticaService.Update(items.WhereUpdated());
+            await habiticaService.Complete(items.WhereCompleted());
+            await habiticaService.Delete(items.WhereDeleted());
 
             // commit read changes
             await todoistService.CommitRead();

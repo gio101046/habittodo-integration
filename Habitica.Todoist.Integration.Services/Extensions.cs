@@ -11,7 +11,7 @@ namespace Habitica.Todoist.Integration.Services.Extensions
     {
         public static ChecklistItem ToHabiticaChecklistItem(this Item item, string habiticaId = null)
         {
-            if (string.IsNullOrEmpty(item.Parent_Id))
+            if (!item.IsChild)
                 return null;
 
             var checklistItem = new ChecklistItem
@@ -25,7 +25,7 @@ namespace Habitica.Todoist.Integration.Services.Extensions
 
         public static Task ToHabiticaTask(this Item item, string habiticaId = null)
         {
-            if (!string.IsNullOrEmpty(item.Parent_Id)) 
+            if (item.IsChild) 
                 return null;
 
             var taskTypeStr = Enum.GetName(typeof(TaskType), TaskType.Todo).ToLower();

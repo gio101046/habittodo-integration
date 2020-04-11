@@ -89,20 +89,19 @@ namespace Habitica.Todoist.Integration.Services
                 return changedItems
                     .Where(x => storageClient
                         .Exists<TodoHabitLink>(userId, x.Id) && x.Is_deleted == 0 && x.Date_completed != null)
-                    .OrderBy(x => x.Parent_Id);
+                    .OrderByDescending(x => x.Parent_Id);
             }
 
             public IEnumerable<Item> WhereDeleted()
             {
                 return changedItems
                     .Where(x => storageClient
-                        .Exists<TodoHabitLink>(userId, x.Id) && x.Is_deleted == 1)
-                    .OrderBy(x => x.Parent_Id);
+                        .Exists<TodoHabitLink>(userId, x.Id) && x.Is_deleted == 1);
             }
 
             public IEnumerator<Item> GetEnumerator()
             {
-                return changedItems.OrderBy(x => x.Parent_Id).GetEnumerator();
+                return changedItems.GetEnumerator();
             }
 
             IEnumerator IEnumerable.GetEnumerator()
