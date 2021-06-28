@@ -1,1 +1,1 @@
-"# habittodo-integration" 
+# habittodo - Habitica and Todoist Integration
