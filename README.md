@@ -1,1 +1,3 @@
-# habittodo - Habitica and Todoist Integration
+# habittodo - Habitica & Todoist Integration
+
+## Under Construction
