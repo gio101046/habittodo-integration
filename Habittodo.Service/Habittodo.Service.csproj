@@ -1,0 +1,16 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net5.0</TargetFramework>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <Compile Remove="Class1.cs" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Habittodo.Data\Habittodo.Data.csproj" />
+      <ProjectReference Include="..\Habittodo.Model\Habittodo.Model.csproj" />
+    </ItemGroup>
+
+</Project>
