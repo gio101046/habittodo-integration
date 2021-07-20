@@ -8,4 +8,15 @@
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Microsoft.Azure.Cosmos.Table" Version="1.0.8" />
   </ItemGroup>
+
+  <ItemGroup>
+    <Compile Remove="ChecklistItem.cs" />
+    <Compile Remove="Due.cs" />
+    <Compile Remove="HabitTodoLink.cs" />
+    <Compile Remove="Item.cs" />
+    <Compile Remove="Task.cs" />
+    <Compile Remove="TodoChange.cs" />
+    <Compile Remove="TodoHabitLink.cs" />
+    <Compile Remove="TodoistSync.cs" />
+  </ItemGroup>
 </Project>
