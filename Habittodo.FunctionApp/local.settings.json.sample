@@ -1,0 +1,12 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "your-azure-storage-connection-string-here",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet-isolated",
+    "LocalConnection": "UseDevelopmentStorage=true",
+    "habiticaUserId": "4ef54610-742d-4503-ba88-faa5d820287c",
+    "habiticaApiKey": "d1446942-cc77-4aa7-aec9-adfda9f901b2",
+    "todoistApiKey": "8ff2969e-84d0-4014-9d48-f96c2587fedf",
+    "tableStorageConnectionString": "your-azure-table-storage-connection-string-here"
+  }
+}

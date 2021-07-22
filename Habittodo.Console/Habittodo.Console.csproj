@@ -6,14 +6,18 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Habittodo.Data\Habittodo.Data.csproj" />
-    <ProjectReference Include="..\Habittodo.Model\Habittodo.Model.csproj" />
     <ProjectReference Include="..\Habittodo.Service\Habittodo.Service.csproj" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="5.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="secrets.json.sample">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

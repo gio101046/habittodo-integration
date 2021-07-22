@@ -1,9 +1,6 @@
-﻿using Habittodo.Data;
-using Habittodo.Model.Storage;
-using Habittodo.Service;
+﻿using Habittodo.Service;
 using Microsoft.Extensions.Configuration;
 using System.IO;
-using System.Linq;
 
 namespace Habitica.Todoist.Integration.Console
 {
@@ -21,25 +18,26 @@ namespace Habitica.Todoist.Integration.Console
         {
             ConfigBuild();
 
-            // initialize all the clients 
-            var habiticaClient = new HabiticaServiceClient(habiticaUserId, habiticaApiKey);
-            var todoistClient = new TodoistServiceClient(todoistApiKey);
-            var tableStorageClient = new TableStorageClient(tableStorageConnectionString);
-
-            // get todoist sync token if available
-            var syncToken = "";
-            try { syncToken = tableStorageClient.Query<TodoistSync>().Where(x => x.PartitionKey == giosUserId).ToList()
-                        .OrderByDescending(x => x.Timestamp).First().RowKey; } catch { }
+            // initialize integration services
+            var todoistService = new TodoistIntegrationService(todoistApiKey,
+                tableStorageConnectionString,
+                giosUserId);
+            var habiticaService = new HabiticaIntegrationService(habiticaUserId,
+                habiticaApiKey,
+                tableStorageConnectionString,
+                giosUserId);
 
             // get all changed items from todoist
-            var response = todoistClient.GetItemChanges(syncToken).ConfigureAwait(false).GetAwaiter().GetResult();
-            var changedItems = response.Items;
+            var items = todoistService.ReadItemChanges().GetAwaiter().GetResult();
 
-            /* TESTING */
-            
-            // store sync token
-            var todoistSync = new TodoistSync(giosUserId, response.Sync_token);
-            tableStorageClient.InsertOrUpdate(todoistSync).ConfigureAwait(false).GetAwaiter().GetResult();
+            // perform actions
+            habiticaService.Add(items.WhereAdded()).GetAwaiter().GetResult();
+            habiticaService.Update(items.WhereUpdated()).GetAwaiter().GetResult();
+            habiticaService.Complete(items.WhereCompleted()).GetAwaiter().GetResult();
+            habiticaService.Delete(items.WhereDeleted()).GetAwaiter().GetResult();
+
+            // commit read changes
+            todoistService.CommitRead().GetAwaiter().GetResult();
         }
 
         static void ConfigBuild()

@@ -1,9 +1,6 @@
 ﻿using Microsoft.Extensions.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace Habitica.Todoist.Integration.Function.Sync
+namespace Habittodo.FunctionApp
 {
     public class Configuration
     {
@@ -12,7 +9,7 @@ namespace Habitica.Todoist.Integration.Function.Sync
         public string HabiticaApiKey => configuration["habiticaApiKey"];
         public string TodoistApiKey => configuration["todoistApiKey"];
         public string TableStorageConnectionString => configuration["tableStorageConnectionString"];
-        public string GiosUserId => "0b6ec4eb-8878-4b9e-8585-7673764a6541";
+        public string UserId => "0b6ec4eb-8878-4b9e-8585-7673764a6541"; // Currently my userId (Gio) 
 
         public Configuration()
         {
